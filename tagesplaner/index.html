@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <title>Todo App</title>
+
+   <link rel="stylesheet" href="to-dolist.css">
+
+   <style>
+
+      * {
+         box-sizing: border-box;
+      }
+
+   </style>
+
+</head>
+
+<body>
+
+   <div class="phone"></div>
+
+   <div class="phone-box">
+      <div class="app">
+         <p id="headline">Ahead Getter<span style="font-size: 0.6rem; display:inline-flex; font-weight: 700;">TM</span></p>
+         <!-- <p id="tagline">Plan your day ahead to get ahead</p> -->
+         <div id="list-space">
+            <div class="centering">
+               <div id="textdiv1">
+                  <!-- <div class="iconsUeberschriftTop"></div> -->
+                  <p class="ueberschrift1"> WAS MORGEN ANSTEHT
+                     <!-- <span style="font-size: 0rem;"> </span>: -->
+                  </p>
+                  <div class="iconsUeberschriftTop"></div>
+               </div>
+               <div>
+                  <button id="neues-todo" onclick="addTodo()">NEU</button>
+               </div>
+            </div>
+            <div id="firstlist"></div>
+            <div class="hr-cont"> <div class="hr"></div> </div>
+            <div id="textdiv2">
+               <!-- <div class="iconsUeberschriftBottom"></div> -->
+               <p class="ueberschrift2"> WAS DU SCHON ERLEDIGT HAST
+                  <!-- <span style="font-size: 0rem;"> </span>: -->
+               </p>
+               <div class="iconsUeberschriftBottom"></div>
+            </div>
+             <div id="secondlist"></div>
+      </div>
+   </div>
+
+
+
+   </div>
+
+   <script>
+
+      let number=1;                                                 // definiert number-count
+      let doFunction=true;
+      let retrieve;
+
+      let todos=[];                   // Befülle den Array of objects mit todos (shown + numbers)
+   
+      // const savedTodos = JSON.parse(localStorage.getItem('key'));
+      // console.log('Array am Anfang',todos);
+      // console.log('Ja/Nein',savedTodos);
+
+
+      // if (Array.isArray(savedTodos)) {
+      //    // Tetrieve localStorage
+      //    // Check if it's an array
+      //    todos=savedTodos;
+      // }
+
+      // else {
+      // addTodo();
+      // addTodo();
+      // addTodo();
+      // saveTodos();
+      // console.log('saveTodos',saveTodos());
+      // retrieve=true;
+      // console.log('Ja/Nein',retrieve);
+      // }
+
+      // function saveTodos() {                                      // Speichert Todos im Browser ab, damit sie bei Refresh nicht weg sind
+      //    localStorage.setItem('key',JSON.stringify(todos));
+      // }
+
+      addTodo();
+      addTodo();
+      addTodo();
+
+      function addTodo () {
+
+         todos.push(number);
+         console.log('Array todos:',todos);
+        // saveTodos(); // Speichert Änderungen im Browser
+         
+
+         // DIV Columns                                     Type    Class     ID      Number
+         const divColumn=createelementTypeClassIdNumber ('div', 'column', 'column', number);
+         appendelement (divColumn,'firstlist');
+
+         // DIV WorkingTextbox                                      Type     Class        ID      Number
+         const divWorkingTextbox=createelementTypeClassIdNumber ('div', 'contTodo', 'contTodo', number);
+         appendelement (divWorkingTextbox,'column'+''+(number).toString());
+
+         // BUTTON Checkbox
+         const checkBox = document.createElement('button');                // erstellt einen Span, der später definiert wird wie eine Textbox zu handeln Textbox
+         checkBox.className = 'checkBox';                                    // Setzt die Klasse
+         checkBox.id='checkBox'+''+(number).toString();                   // Setzt die ID
+
+         checkBox.addEventListener('click', function () {
+            changeListDown(checkBox)}
+            );             // Fügt ein Event "click hinzu"
+
+         document.getElementById('contTodo'+''+(number).toString()).appendChild(checkBox);    // Hole dir (bereits vorhandenes DIV), hä
+
+         // INPUT Textbox                                      Type      Class       ID      Number
+         const span = document.createElement('span');                // erstellt einen Span, der später definiert wird wie eine Textbox zu handeln Textbox
+         span.className = 'textbox';                                    // Setzt die Klasse
+         span.id='textbox'+''+(number).toString();                   // Setzt die ID
+         span.innerText = 'Füge ein neues todo hinzu';               // Fügt einen Text hinzu
+         //span.innerText = number;               // Fügt einen Text hinzu
+
+
+         span.setAttribute('role', 'textbox');                       // Setzt SPAN als Textbox
+         span.setAttribute('contenteditable', true);                 // Macht Textbox editierbar
+
+         span.addEventListener('click', function() {                 // Fügt ein Event "click hinzu"
+         span.innerText = '';                                // Innerer Text wird gelöscht
+         });
+
+         document.getElementById('contTodo'+''+(number).toString()).appendChild(span);    // Hole dir (bereits vorhandenes DIV), hänge ein Span an
+
+         // BUTTON Ok                                       Type      Class        ID       Number
+         const okButton=createelementTypeClassIdNumber ('button', 'okButton', 'okButton', number);
+         okButton.innerText = 'ok';                                  // Fügt einen Text hinzu
+         //okButton.onclick = function() {changeColorOkButton(okButton); };   // Setzt eine On-Click Funktion
+         appendelement (okButton, 'contTodo'+''+(number).toString());
+
+         // BUTTON Hoch                                     Type       Class          ID       Number
+         const hochButton=createelementTypeClassIdNumber ('button', 'hochButton', 'hochButton', number);
+         hochButton.onclick = function() { changeListInbetween(hochButton); };   // Setzt eine On-Click Funktion
+         appendelement (hochButton, 'contTodo'+''+(number).toString());
+
+         // BUTTON Up                                       Type      Class        ID       Number
+         const upButton=createelementTypeClassIdNumber ('button', 'upButton', 'upButton', number);
+         upButton.innerText = 'up';                                  // Fügt einen Text hinzu
+         upButton.onclick = function() { changeListUp(upButton); };   // Setzt eine On-Click Funktion
+         appendelement (upButton, 'contTodo'+''+(number).toString());
+
+         // BUTTON Delete
+         const delButton=document.createElement('button');              // erstellt einen Button
+         delButton.className = 'delButton';                             // Setzt die Klasse
+         delButton.id='delButton'+''+(number).toString();               // Setzt die ID
+
+         delButton.onclick = function() { deleteDiv(delButton.id); };   // Setzt eine On-Click Funktion
+         document.getElementById('column'+''+(number).toString()).appendChild(delButton);        // Hole dir (bereits vorhandenes DIV), hänge einen Button an
+
+         // counter für #Elemente
+         number=number+1;                                               // erhöhe den Number Count um +1
+      }
+
+
+   function createelementTypeClassIdNumber (elementType, elementClass, elementId, elementNumber, elementParent) {
+      const element = document.createElement(elementType);                // erstellt einen Span, der später definiert wird wie eine Textbox zu handeln Textbox
+      element.className = elementClass;                                    // Setzt die Klasse
+      element.id=elementId+''+(elementNumber.toString());
+      return(element);                                                    // Setzt ID
+     // document.getElementById(elementParent).appendChild(element);      // Hole dir (bereits vorhandenes DIV), hänge ein DIV an
+   }
+
+   // function changeColorOkButton (okButton) {
+   //    console.log('BUTTON');
+   //    okButton=okButton.id;            // Get ID
+   //    console.log(okButton);
+   //    okButton=okButton.substring(8);  // Take Number
+   //    console.log(okButton);
+   //    const changeColor = elementId+''+(elementNumber.toString());
+   //    console.log(changeColor);
+   //    document.getElementById(changeColor).style.color = "red";
+   // }
+
+   function appendelement (elementChild, elementParent) {
+      document.getElementById(elementParent).appendChild(elementChild);      // Hole dir (bereits vorhandenes DIV), hänge ein DIV an
+   }
+
+   function changeListInbetween (hochButton) {
+      hochButton=hochButton.id;            // Get ID
+      hochButton=hochButton.substring(10);  // Take Number
+      console.log(hochButton);
+      //let objectBefore = 'column'+''+hochButton;
+
+      let objectBefore=getObjectBefore(hochButton*1); //*1 wandelt in Array um
+
+      if(doFunction) {
+
+      // console.log('objectBefore');
+      // console.log(objectBefore[0].toString());
+
+      // objectBefore='column'+''+objectBefore[0].toString();
+      // console.log(objectBefore);
+
+      // let objectNow='column'+''+hochButton;   // Write Column
+      // console.log(objectNow);
+
+      // todos.forEach(function(element) {             // Löscht firstlist
+      // let remover='column'+''+element.toString();   // 'Lädt' contTodo, fügt string der richtigen Nummer hinzu
+      // remover=document.getElementById(remover);     // Nimmt sich Div, anhand der ID
+      // //remover.remove();
+      // remover.style.display = "none";
+      // // console.log(element);
+      // // console.log(remover);
+      // });
+
+      todos.forEach(function(element) {             // Baut firstlist neu auf
+      let adder='column'+''+element.toString();   // 'Lädt' contTodo, fügt string der richtigen Nummer hinzu
+      adder=document.getElementById(adder);     // Nimmt sich Div, anhand der ID
+      appendelement (adder, 'firstlist');
+      console.log(element);
+      console.log(adder);
+      });
+
+      // const div1 = document.getElementById(objectNow);
+      // const div2 = document.getElementById(objectBefore);
+
+      //  const parent = div1.parentElement;
+      //  parent.insertBefore(div1, div2);
+
+   }
+
+      else {
+         console.log('no-change');
+         console.log(todos);
+      }
+     // const newChild=document.getElementById(checkBox);     // Get Column
+
+   }
+
+   function getObjectBefore(contTodo) {
+
+      // console.log(todos);
+      // console.log(contTodo);
+      // console.log('for-Schleife');
+
+      for (let i = 0; i < 10; i++) {
+
+         if(todos[i] === contTodo) {
+            if(i === 0) {
+            doFunction=false;
+            return[i];
+            }
+
+            else {doFunction=true;}
+
+            swap(i-1, i);
+
+            return[i];
+         }
+      }
+
+      return null;
+
+   }
+
+   function swap(i, j) {
+         console.log('Swap Function Before');
+         console.log(todos[i]);
+         console.log(todos[j]);
+            const temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
+         console.log('Swap Function After');
+         console.log(todos[i]);
+         console.log(todos[j]);
+            console.log('todos Arrays');
+            console.log(todos);
+            // saveTodos(); // Speichert Änderungen im Browser
+         }
+
+   function changeListDown (checkBox) {
+
+      checkBox=checkBox.id;            // Get ID
+      document.getElementById(checkBox).style.backgroundImage = 'url(icons/checkboxchecked.svg)';
+
+      console.log(checkBox);
+      checkBox=checkBox.substring(8);  // Take Number
+      console.log(checkBox);
+
+      let filteredArray = todos.filter(x => x !== checkBox*1); // Filtered nach dem richtigen Div im Array
+      todos=filteredArray;
+      // saveTodos(); // Speichert Änderungen im Browser
+
+      console.log('Ergebnis filtered Array');
+      console.log(todos);
+
+      let buttonVisibility = 'upButton'+''+checkBox;
+      console.log(buttonVisibility);
+
+      buttonVisibility= document.getElementById(buttonVisibility);
+      console.log(buttonVisibility);
+      buttonVisibility.style.display = "initial";
+
+      buttonVisibility = 'hochButton'+''+checkBox;
+      console.log(buttonVisibility);
+      buttonVisibility= document.getElementById(buttonVisibility);
+      console.log(buttonVisibility);
+      buttonVisibility.style.display = "none";
+
+      checkBox='column'+''+checkBox;   // Write Column
+      console.log(checkBox);
+      const newChild=document.getElementById(checkBox);     // Get Column
+      document.getElementById('secondlist').appendChild(newChild); // Change Parent
+   }
+
+   function changeListUp (upButton) {
+
+   upButton=upButton.id;            // Get ID
+   console.log(upButton);
+   upButton=upButton.substring(8);  // Take Number
+   console.log(upButton);
+
+   todos.push(upButton*1);
+   // saveTodos(); // Speichert Änderungen im Browser
+
+   console.log('PUSH IN ARRAY');
+   console.log(todos);
+
+   let upButtoncheckBox = 'checkBox'+''+upButton;
+   document.getElementById(upButtoncheckBox).style.backgroundImage = 'url(icons/checkboxunchecked.svg)';
+
+   let upButtonVisibility = 'upButton'+''+upButton;
+   console.log(upButtonVisibility);
+   upButtonVisibility= document.getElementById(upButtonVisibility);
+   console.log(upButtonVisibility);
+   upButtonVisibility.style.display = "none";
+
+   upButtonVisibility = 'hochButton'+''+upButton;
+   console.log(upButtonVisibility);
+   upButtonVisibility= document.getElementById(upButtonVisibility);
+   console.log(upButtonVisibility);
+   upButtonVisibility.style.display = "initial";
+
+   upButton='column'+''+upButton;   // Write Column
+   console.log(upButton);
+   const newChild=document.getElementById(upButton);     // Get Column
+   document.getElementById('firstlist').appendChild(newChild); // Change Parent
+   }
+
+      function deleteDiv (str) {                         // Löscht DIV mit CHECKBOX, TEXTBOX und OK-BUTTON
+
+         //str wird von Button geladen und ist Name+ID -> "delButtonX" (X steht für eine Zahl)
+         // speichert delButtonX in strdelButton ab
+         let strdelButton=str;
+
+         const strNumberArray = str.substring(9);
+         console.log(strNumberArray);
+         let filteredArray = todos.filter(x => x !== strNumberArray*1); // Filtered nach dem richtigen Div im Array
+         todos=filteredArray;
+         // saveTodos(); // Speichert Änderungen im Browser
+
+         console.log('Array nach Delete');
+         console.log(todos);
+
+
+         // DIV mit richtiger ID laden und löschen
+         str='column'+''+str.substring(9);             // 'Lädt' contTodo, fügt string der richtigen Nummer hinzu (löscht delButton weg, damir nur mehr Nummer übrig bleibt)
+
+         str=document.getElementById(str);               // Nimmt sich Div, anhand der ID
+         str.remove();                                   // löscht DIV
+
+         // delete Button ist nicht im DIV, deshalb muss dasgleiche für ihn gemacht werden
+         // (Button mit richtiger ID laden und löschen)
+         strdelButton='delButton'+''+strdelButton.substring(9);   // 'Lädt' contTodo, fügt string der richtigen Nummer hinzu
+         strdelButton=document.getElementById(strdelButton);      // Nimmt sich Div, anhand der ID
+         strdelButton.remove();                                   // löscht DIV
+      }
+
+   </script>
+
+</body>
+
+</html>
